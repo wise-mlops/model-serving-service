@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     DOMAIN: str = "localhost"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
 
+    APP_ENV: str = "container"
+    KUBE_CONFIG_PATH: str = "/var/run/secrets/kubernetes.io/serviceaccount"
+
     PORT: int = 8000
     SERVICE_NAME: str = "Python FastAPI Template"
     SERVICE_CODE: int = 100
