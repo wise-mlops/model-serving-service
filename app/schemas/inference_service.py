@@ -102,15 +102,9 @@ class TransformerSpec(BaseModel):
     tolerations: Optional[List[Toleration]] = None
 
 
-class InferenceServiceSpec(BaseModel):
+class InferenceServiceInfo(BaseModel):
     predictor: PredictorSpec
     transformer: Optional[TransformerSpec] = None
-
-
-class InferenceServiceInfo(BaseModel):
-    name: str
-    namespace: str = 'kubeflow-user-example-com'
-    inference_service_spec: InferenceServiceSpec
     sidecar_inject: bool = False
     enable_prometheus_scraping: bool = False
 
@@ -118,19 +112,15 @@ class InferenceServiceInfo(BaseModel):
         from_attributes = True
         json_schema_extra = {
             "example": {
-                "name": "{{MODEL_NAME}}",
-                "namespace": "kubeflow-user-example-com",
-                "inference_service_spec": {
-                    "predictor": {
-                        "model_spec": {
-                            "storage_uri": "s3://{{BUCKET_NAME}}/{{MODEL_NAME}}",
-                            "protocolVersion": "v2",
-                            "model_format": {
-                                "name": "pytorch"
-                            }
-                        },
-                        "service_account_name": "storage-system-minio-sa"
-                    }
+                "predictor": {
+                    "model_spec": {
+                        "storage_uri": "s3://{{BUCKET_NAME}}/{{MODEL_PATH}}",
+                        "protocolVersion": "v2",
+                        "model_format": {
+                            "name": "pytorch"
+                        }
+                    },
+                    "service_account_name": "storage-system-minio-sa"
                 },
                 "sidecar_inject": "false"
             }

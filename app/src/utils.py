@@ -6,16 +6,17 @@ from kserve.constants.constants import KSERVE_V1BETA1, KSERVE_KIND
 from kubernetes.client import V1ContainerPort, V1EnvVar, V1Toleration, V1ObjectMeta, V1ResourceRequirements, V1Container
 
 from app.schemas.inference_service import Resource, ModelFormat, Logger, Env, Toleration, Batcher, \
-    InferenceServiceInfo, InferenceServiceSpec, PredictorSpec, ModelSpec, ResourceRequirements, Port, TransformerSpec, \
+    InferenceServiceInfo, PredictorSpec, ModelSpec, ResourceRequirements, Port, TransformerSpec, \
     Container
 
 
-def create_v1beta1_inference_service(inference_service_info: InferenceServiceInfo):
+def create_v1beta1_inference_service(name: str, namespace: str, inference_service_info: InferenceServiceInfo):
     return V1beta1InferenceService(
         api_version=KSERVE_V1BETA1,
         kind=KSERVE_KIND,
         metadata=_create_v1_object_meta(
-            name=inference_service_info.name,
+            name=name,
+            namespace=namespace,
             annotations=_create_annotations(
                 sidecar_inject=inference_service_info.sidecar_inject,
                 enable_prometheus_scraping=inference_service_info.enable_prometheus_scraping
@@ -23,7 +24,7 @@ def create_v1beta1_inference_service(inference_service_info: InferenceServiceInf
         ),
         spec=inference_service_spec
     ) if (inference_service_spec := _create_v1beta1_inference_service_spec(
-        inference_service_spec=inference_service_info.inference_service_spec)) else None
+        predictor_spec=inference_service_info.predictor, transformer_spec=inference_service_info.transformer)) else None
 
 
 def _create_v1beta1_model_format(model_format: Optional[ModelFormat] = None):
@@ -144,11 +145,10 @@ def _create_annotations(
     return annotations if annotations else None
 
 
-def _create_v1beta1_inference_service_spec(inference_service_spec: InferenceServiceSpec):
-    return V1beta1InferenceServiceSpec(predictor=predictor_spec,
-                                       transformer=_create_v1beta1_transformer_spec(
-                                           inference_service_spec.transformer)) if (
-        predictor_spec := _create_v1beta1_predictor_spec(predictor_spec=inference_service_spec.predictor)) else None
+def _create_v1beta1_inference_service_spec(predictor_spec: PredictorSpec, transformer_spec: Optional[TransformerSpec]):
+    return V1beta1InferenceServiceSpec(predictor=predictor,
+                                       transformer=_create_v1beta1_transformer_spec(transformer_spec)) if (
+        predictor := _create_v1beta1_predictor_spec(predictor_spec=predictor_spec)) else None
 
 
 def _create_v1beta1_predictor_spec(predictor_spec: PredictorSpec):

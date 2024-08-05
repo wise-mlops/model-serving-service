@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, Query, Path
+from fastapi import APIRouter, Query, Path, Body
 
 from app.schemas.api_response import APIResponseModel
 from app.schemas.inference_service import InferenceServiceInfo
@@ -34,10 +34,11 @@ def get_inference_service_list(
         page_size=page_size)
 
 
-@router.post("", response_model=APIResponseModel)
+@router.post("/{name}", response_model=APIResponseModel)
 def create_inference_service(
         inference_service_info: InferenceServiceInfo,
-        namespace: Optional[str] = Path(..., description='네임스페이스 설정')
+        name: str = Path(..., description='inference service명 설정'),
+        namespace: str = Path(..., description='네임스페이스 설정')
 ):
     """
     inference service 만들기\n
@@ -47,7 +48,7 @@ def create_inference_service(
         - minio 경로 설정
     """
     return APIResponseModel.success(
-        inference_service.create_inference_service(namespace=namespace, inference_service_info=inference_service_info))
+        inference_service.create_inference_service(name=name, namespace=namespace, inference_service_info=inference_service_info))
 
 
 @router.patch("/{name}", response_model=APIResponseModel)
@@ -126,3 +127,18 @@ def get_inference_service_stat(
     """
     return APIResponseModel.success(
         inference_service.get_inference_service_stat(name=name, namespace=namespace))
+
+
+@router.post("/{name}/infer", response_model=APIResponseModel)
+def inference(
+        name: str = Path(..., description='inference service명 설정'),
+        namespace: str = Path(..., description='네임스페이스 설정'),
+        data: list = Body(..., description='테스트 포맷에 맞게 input값을 설정'),
+        multi: Optional[bool] = Query(default=True, description='true 다중 데이터 처리, false 단일 데이터 처리')
+):
+    """
+    inference service를 통해 모델을 테스트 해볼 수 있습니다.\n
+        - input값은 각 포맷에 맞게 입력시 output을 받아볼 수 있습니다.
+    """
+    return APIResponseModel.success(
+        inference_service.inference(name=name, namespace=namespace, data=data, multi=multi))

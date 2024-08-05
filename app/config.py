@@ -23,6 +23,7 @@ class Settings(BaseSettings):
 
     APP_ENV: str = "container"
     KUBE_CONFIG_PATH: str = "/var/run/secrets/kubernetes.io/serviceaccount"
+    PREDICTOR_HOST: str = "http://211.39.140.43:31894"
 
     PORT: int = 8000
     SERVICE_NAME: str = "Python FastAPI Template"

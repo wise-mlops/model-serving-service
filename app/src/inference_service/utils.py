@@ -75,3 +75,38 @@ def _get_protocol_version(i_svc_detail):
 
 def convert_inference_service_url(name: str):
     return f"http://211.39.140.216/kserve/{name}/infer"
+
+
+def _convert_to_v1_form(data, multi: bool = False):
+    if multi:
+        return {
+            "instances": data
+        }
+    return {
+        "instances": [
+            data
+        ]
+    }
+
+
+def _convert_to_v2_form(data, multi: bool = False):
+    if multi:
+        inputs = list()
+        for i, d in enumerate(data):
+            inputs.append({
+                "name": f"input_{i}",
+                "shape": [len(d), len(d[0])],
+                "datatype": "FP32",
+                "data": d
+            })
+        return inputs
+    return {
+        "inputs": [
+            {
+                "name": "input",
+                "shape": [len(data), len(data[0])],
+                "datatype": "FP32",
+                "data": data
+            }
+        ]
+    }
