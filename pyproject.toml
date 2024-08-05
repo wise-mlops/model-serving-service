@@ -90,6 +90,7 @@ plugins = [
 ]
 python_version = "3.9"
 follow_imports = "skip"
+ignore_missing_imports = true
 warn_redundant_casts = true
 warn_unused_ignores = false # true시 ignore 처리 error로 뜨게 함
 disallow_any_generics = true
