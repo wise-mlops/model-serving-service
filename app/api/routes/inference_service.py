@@ -61,7 +61,8 @@ def patch_inference_service(
     추후 협의
     """
     return APIResponseModel.success(
-        inference_service.patch_inference_service(name=name, namespace=namespace, inference_service_info=inference_service_info))
+        inference_service.patch_inference_service(name=name, namespace=namespace,
+                                                  inference_service_info=inference_service_info))
 
 
 @router.put("/{name}", response_model=APIResponseModel)
@@ -75,7 +76,8 @@ def replace_inference_service(
     추후 협의
     """
     return APIResponseModel.success(
-        inference_service.replace_inference_service(name=name, namespace=namespace, inference_service_info=inference_service_info))
+        inference_service.replace_inference_service(name=name, namespace=namespace,
+                                                    inference_service_info=inference_service_info))
 
 
 @router.get("/{name}", response_model=APIResponseModel)
@@ -100,3 +102,27 @@ def delete_inference_service(
     """
     return APIResponseModel.success(
         inference_service.delete_inference_service(name=name, namespace=namespace))
+
+
+@router.get("/{name}/detail", response_model=APIResponseModel)
+def get_inference_service_parse_detail(
+        name: str = Path(..., description='inference service명 설정'),
+        namespace: str = Path(..., description='네임스페이스 설정')
+):
+    """
+    특정 inference service의 필요한 정보를 받아 볼 수 있습니다.
+    """
+    return APIResponseModel.success(
+        inference_service.get_inference_service_parse_detail(name=name, namespace=namespace))
+
+
+@router.get("/{name}/stat", response_model=APIResponseModel)
+def get_inference_service_stat(
+        name: str = Path(..., description='inference service명 설정'),
+        namespace: str = Path(..., description='네임스페이스 설정')
+):
+    """
+    같은 이름의 infernece service가 있는지 확인 할 수 있습니다.
+    """
+    return APIResponseModel.success(
+        inference_service.get_inference_service_stat(name=name, namespace=namespace))

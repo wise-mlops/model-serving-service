@@ -16,7 +16,7 @@ def create_v1beta1_inference_service(inference_service_info: InferenceServiceInf
         kind=KSERVE_KIND,
         metadata=_create_v1_object_meta(
             name=inference_service_info.name,
-            annotations=_get_annotations(
+            annotations=_create_annotations(
                 sidecar_inject=inference_service_info.sidecar_inject,
                 enable_prometheus_scraping=inference_service_info.enable_prometheus_scraping
             )
@@ -131,7 +131,7 @@ def _create_v1_container(container: Optional[Container] = None):
                        resources=_create_v1_resource_requirements(resource_requirements=container.resources))
 
 
-def _get_annotations(
+def _create_annotations(
         annotations: Optional[Dict[str, str]] = None,
         sidecar_inject: bool = False,
         enable_prometheus_scraping: bool = False) -> Optional[Dict[str, str]]:
