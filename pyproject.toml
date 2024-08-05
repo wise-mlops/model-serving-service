@@ -44,6 +44,7 @@ pyyaml = "^6.0.1"
 uvicorn = ">=0.21.1,<0.22.0"
 pydantic-settings = "^2.4.0"
 kserve = "^0.13.1"
+types-requests = "^2.32.0.20240712"
 
 
 [tool.poetry.group.lint.dependencies]

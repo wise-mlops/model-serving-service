@@ -13,11 +13,12 @@ from app.src.inference_service.utils import _get_service_status, _get_creation_t
 from app.src.utils import create_v1beta1_inference_service
 
 
-def create_inference_service(inference_service_info: InferenceServiceInfo, name: str, namespace: Optional[str] = None):
-    v1beta1_i_svc = create_v1beta1_inference_service(inference_service_info=inference_service_info)
+def create_inference_service(name: str, namespace: str, inference_service_info: InferenceServiceInfo):
+    v1beta1_i_svc = create_v1beta1_inference_service(name=name, namespace=namespace,
+                                                     inference_service_info=inference_service_info)
     if v1beta1_i_svc is None:
         return False
-    return isvc_client.create(namespace=namespace if namespace else inference_service_info.namespace,
+    return isvc_client.create(namespace=namespace,
                               inference_service=v1beta1_i_svc)
 
 
@@ -78,23 +79,23 @@ def get_inference_service_list(namespace: Optional[str] = None):
     return inference_service_list
 
 
-def patch_inference_service(inference_service_info: InferenceServiceInfo, name: Optional[str] = None,
-                            namespace: Optional[str] = None):
-    v1beta1_i_svc = create_v1beta1_inference_service(inference_service_info=inference_service_info)
+def patch_inference_service(name: str, namespace: str, inference_service_info: InferenceServiceInfo):
+    v1beta1_i_svc = create_v1beta1_inference_service(name=name, namespace=namespace,
+                                                     inference_service_info=inference_service_info)
     if v1beta1_i_svc is None:
         return False
-    return isvc_client.patch(name=name if name else inference_service_info.name,
-                             namespace=namespace if namespace else inference_service_info.namespace,
+    return isvc_client.patch(name=name,
+                             namespace=namespace,
                              inference_service=v1beta1_i_svc)
 
 
-def replace_inference_service(inference_service_info: InferenceServiceInfo, name: Optional[str] = None,
-                              namespace: Optional[str] = None):
-    v1beta1_i_svc = create_v1beta1_inference_service(inference_service_info=inference_service_info)
+def replace_inference_service(name: str, namespace: str, inference_service_info: InferenceServiceInfo):
+    v1beta1_i_svc = create_v1beta1_inference_service(name=name, namespace=namespace,
+                                                     inference_service_info=inference_service_info)
     if v1beta1_i_svc is None:
         return False
-    return isvc_client.replace(name=name if name else inference_service_info.name,
-                               namespace=namespace if namespace else inference_service_info.namespace,
+    return isvc_client.replace(name=name,
+                               namespace=namespace,
                                inference_service=v1beta1_i_svc)
 
 

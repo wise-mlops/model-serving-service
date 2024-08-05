@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List, Any
 
 from fastapi import APIRouter, Query, Path, Body
 
@@ -48,7 +48,8 @@ def create_inference_service(
         - minio 경로 설정
     """
     return APIResponseModel.success(
-        inference_service.create_inference_service(name=name, namespace=namespace, inference_service_info=inference_service_info))
+        inference_service.create_inference_service(name=name, namespace=namespace,
+                                                   inference_service_info=inference_service_info))
 
 
 @router.patch("/{name}", response_model=APIResponseModel)
@@ -133,8 +134,8 @@ def get_inference_service_stat(
 def inference(
         name: str = Path(..., description='inference service명 설정'),
         namespace: str = Path(..., description='네임스페이스 설정'),
-        data: list = Body(..., description='테스트 포맷에 맞게 input값을 설정'),
-        multi: Optional[bool] = Query(default=True, description='true 다중 데이터 처리, false 단일 데이터 처리')
+        data: List[Any] = Body(..., description='테스트 포맷에 맞게 input값을 설정'),
+        multi: bool = Query(default=True, description='true 다중 데이터 처리, false 단일 데이터 처리')
 ):
     """
     inference service를 통해 모델을 테스트 해볼 수 있습니다.\n
