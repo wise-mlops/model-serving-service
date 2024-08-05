@@ -1,3 +1,4 @@
+import json
 import logging
 
 from fastapi import Request
@@ -55,4 +56,21 @@ async def application_error_handler(request: Request, exc: ApplicationError):
         status_code=200, content=APIResponseModel.create(code=exc.code,
                                                          message=exc.message,
                                                          result=exc.result).to_dict()
+    )
+
+
+async def runtime_error_handler(request: Request, exc: RuntimeError):
+    logging.error(f"{request.client} {request.method} {request.url} → {repr(exc)}")
+
+    response_str = exc.args[0]
+    response_split = response_str.split("\n")
+    reason = response_split[1].split("Reason: ")[-1]
+    response_body = response_split[3].split("HTTP response body: ")[-1]
+    response_dict = json.loads(response_body)
+
+    status_code = int(f"{settings.SERVICE_CODE}{response_dict.get('code')}")
+    return JSONResponse(
+        status_code=200, content=APIResponseModel.create(code=status_code,
+                                                         message=reason,
+                                                         result=response_dict.get('message')).to_dict()
     )

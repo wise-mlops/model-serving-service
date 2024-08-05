@@ -66,6 +66,7 @@ app.add_exception_handler(RequestValidationError,
                           typing.cast(HTTPExceptionHandler, handlers.request_validation_exception_handler))
 app.add_exception_handler(ValidationError, typing.cast(HTTPExceptionHandler, handlers.validation_exception_handler))
 app.add_exception_handler(ApplicationError, typing.cast(HTTPExceptionHandler, handlers.application_error_handler))
+app.add_exception_handler(RuntimeError, typing.cast(HTTPExceptionHandler, handlers.runtime_error_handler))
 
 
 @app.middleware("http")
