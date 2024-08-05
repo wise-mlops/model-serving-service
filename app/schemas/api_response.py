@@ -45,21 +45,18 @@ class APIResponseModel(BaseModel):
         }
 
     def paginate(self, filter_column, query, sort_column, reverse, page_index, page_size):
-        return self._filter(target=filter_column) \
-            ._search(query=query) \
-            ._sort(target=sort_column, reverse=reverse) \
-            ._paginate(page_index=page_index, page_size=page_size)
+        return self._search(query=query, target=filter_column)._sort(target=sort_column, reverse=reverse)._paginate(
+            page_index=page_index,
+            page_size=page_size)
 
-    def _filter(self, target):
-        if self.result is None or target is None:
-            return self
-        self.result = [item for item in self.result[target]]
-        return self
-
-    def _search(self, query):
+    def _search(self, query, target=None):
         if self.result is None or query is None:
             return self
-        self.result = [item for item in self.result if any(query.lower() in value.lower() for value in item.values())]
+        if target:
+            self.result = [item for item in self.result if query.lower() in str(item[target]).lower()]
+        else:
+            self.result = [item for item in self.result if
+                           any(query.lower() in str(value).lower() for value in item.values())]
         return self
 
     def _sort(self, target, reverse=False):
