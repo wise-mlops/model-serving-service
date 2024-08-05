@@ -110,6 +110,16 @@ def inference(name: str, data: Any, namespace: Optional[str] = None, multi: bool
         raise ApplicationError(code=int(f"{settings.SERVICE_CODE}{status.HTTP_404_NOT_FOUND}"), message="NOT FOUND",
                                result="host is not found.")
 
+    if name in ['smr', 'qa', 'query', 'dst']:
+        if isinstance(data, list):
+            multi = True
+            data = [{"body": d} for d in data]
+        else:
+            multi = False
+            data = {
+                "body": data
+            }
+
     is_v1 = _get_protocol_version(i_svc_detail) == "v1"
 
     if is_v1:

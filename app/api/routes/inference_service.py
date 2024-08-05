@@ -1,4 +1,4 @@
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Union, Dict
 
 from fastapi import APIRouter, Query, Path, Body
 
@@ -134,7 +134,7 @@ def get_inference_service_stat(
 def inference(
         name: str = Path(..., description='inference service명 설정'),
         namespace: str = Path(..., description='네임스페이스 설정'),
-        data: List[Any] = Body(..., description='테스트 포맷에 맞게 input값을 설정'),
+        data: Union[List[Any], Dict[str, Any]] = Body(..., description='테스트 포맷에 맞게 input값을 설정'),
         multi: bool = Query(default=True, description='true 다중 데이터 처리, false 단일 데이터 처리')
 ):
     """
