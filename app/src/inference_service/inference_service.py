@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict
 
 from app.schemas.inference_service import InferenceServiceInfo
 from app.src.inference_service import isvc_client
@@ -19,14 +19,17 @@ def get_inference_service(name: Optional[str] = None, namespace: Optional[str] =
 
 
 def get_inference_service_list(namespace: Optional[str] = None):
-    return [
-        {
-            'name': _get_name(item),
-            'modelFormat': _get_model_format(item),
-            'creationTimestamp': _get_creation_timestamp(item),
-            'status': _get_service_status(item)
-        } for item in get_inference_service(namespace=namespace)['items']
-    ]
+    inference_service_list = get_inference_service(namespace=namespace)
+    if isinstance(inference_service_list, dict) and 'items' in inference_service_list:
+        return [
+            {
+                'name': _get_name(item),
+                'modelFormat': _get_model_format(item),
+                'creationTimestamp': _get_creation_timestamp(item),
+                'status': _get_service_status(item)
+            } for item in inference_service_list['items']
+        ]
+    return inference_service_list
 
 
 def patch_inference_service(inference_service_info: InferenceServiceInfo, name: Optional[str] = None,
