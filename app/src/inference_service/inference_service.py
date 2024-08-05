@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional
 
 from app.schemas.inference_service import InferenceServiceInfo
 from app.src.inference_service import isvc_client
