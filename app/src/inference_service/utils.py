@@ -110,12 +110,3 @@ def _convert_to_v2_form(data, multi: bool = False):
             }
         ]
     }
-
-
-def convert_nlp_data(data: dict, task: str):
-    formatted_data = None
-    if task == 'smr' or task == 'qa' or task == 'query' or task == 'dst':
-        formatted_data = {
-            "body": data
-        }
-    return formatted_data
