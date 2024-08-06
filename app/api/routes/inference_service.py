@@ -13,25 +13,22 @@ router = APIRouter(prefix="/inference-services/{namespace}",
 @router.get("", response_model=APIResponseModel)
 def get_inference_service_list(
         namespace: Optional[str] = Path(..., description='네임스페이스 설정'),
-        page_index: Optional[int] = Query(default=0, description='페이지 번호 설정'),
-        page_size: Optional[int] = Query(default=10,
+        page_index: Optional[int] = Query(default=None, description='페이지 번호 설정'),
+        page_size: Optional[int] = Query(default=None,
                                          description='한 페이지마다 객체 수 설정 (0 이하 값이면 페이징 처리 X)'),
-        search_keyword: Optional[str] = Query(default=None, description='검색 키워드 설정'),
         search_column: Optional[str] = Query(default=None, description='속성 검색 설정'),
-        sort_column: Optional[str] = Query(default='creationTimestamp',
-                                           description='정렬 기준 속성 설정'),
-        reverse: Optional[bool] = Query(default=False, description='True 오름차순, False 내림차순')
+        search_keyword: Optional[str] = Query(default=None, description='검색 키워드 설정'),
+        sort_column: Optional[str] = Query(default=None, description='정렬 기준 속성 설정'),
+        filter_column: Optional[str] = Query(default=None, description='특정 필터 값만 가져오도록 설정'),
+        reverse: Optional[bool] = Query(default=None, description='True 오름차순, False 내림차순')
 ):
     """
     inference service list를 출력합니다.
     """
     return APIResponseModel.success(inference_service.get_inference_service_list(namespace=namespace)).paginate(
-        filter_column=search_column,
-        query=search_keyword,
-        sort_column=sort_column,
-        reverse=reverse,
-        page_index=page_index,
-        page_size=page_size)
+        search_column=search_column, query=search_keyword, sort_column=sort_column, reverse=reverse,
+        filter_column=filter_column, page_index=page_index, page_size=page_size if page_size is not None else 0,
+        total_hits=None)
 
 
 @router.post("/{name}", response_model=APIResponseModel)
