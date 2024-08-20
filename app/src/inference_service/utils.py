@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 def _get_metadata(i_svc_detail):
     return i_svc_detail['metadata']
 
@@ -77,36 +80,52 @@ def convert_inference_service_url(name: str):
     return f"http://211.39.140.216/kserve/{name}/infer"
 
 
-def _convert_to_v1_form(data, multi: bool = False):
+def convert_input_format(data, is_v1: bool = True, multi: Optional[bool] = None):
+    if multi is None:
+        return data
+    inputs = []
     if multi:
+        inputs = data
+    else:
+        inputs.append(data)
+    if is_v1:
         return {
-            "instances": data
+            "instances": inputs
         }
     return {
-        "instances": [
-            data
-        ]
+        "inputs": inputs
     }
 
-
-def _convert_to_v2_form(data, multi: bool = False):
-    if multi:
-        inputs = list()
-        for i, d in enumerate(data):
-            inputs.append({
-                "name": f"input_{i}",
-                "shape": [len(d), len(d[0])],
-                "datatype": "FP32",
-                "data": d
-            })
-        return inputs
-    return {
-        "inputs": [
-            {
-                "name": "input",
-                "shape": [len(data), len(data[0])],
-                "datatype": "FP32",
-                "data": data
-            }
-        ]
-    }
+# def _convert_to_v1_form(data, multi: bool = False):
+#     if multi:
+#         return {
+#             "instances": data
+#         }
+#     return {
+#         "instances": [
+#             data
+#         ]
+#     }
+#
+#
+# def _convert_to_v2_form(data, multi: bool = False):
+#     if multi:
+#         inputs = list()
+#         for i, d in enumerate(data):
+#             inputs.append({
+#                 "name": f"input_{i}",
+#                 "shape": [len(d), len(d[0])],
+#                 "datatype": "FP32",
+#                 "data": d
+#             })
+#         return inputs
+#     return {
+#         "inputs": [
+#             {
+#                 "name": "input",
+#                 "shape": [len(data), len(data[0])],
+#                 "datatype": "FP32",
+#                 "data": data
+#             }
+#         ]
+#     }

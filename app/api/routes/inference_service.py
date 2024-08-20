@@ -1,4 +1,4 @@
-from typing import Optional, List, Any, Union, Dict
+from typing import Optional, List, Any, Dict
 
 from fastapi import APIRouter, Query, Path, Body
 
@@ -10,7 +10,7 @@ router = APIRouter(prefix="/inference-services/{namespace}",
                    tags=["inference-services"])
 
 
-@router.get("", response_model=APIResponseModel)
+@router.get("", response_model=APIResponseModel, operation_id="listInferenceServices")
 def get_inference_service_list(
         namespace: Optional[str] = Path(..., description='네임스페이스 설정'),
         page_index: Optional[int] = Query(default=None, description='페이지 번호 설정'),
@@ -31,7 +31,7 @@ def get_inference_service_list(
         total_hits=None)
 
 
-@router.post("/{name}", response_model=APIResponseModel)
+@router.post("/{name}", response_model=APIResponseModel, operation_id="createInferenceService")
 def create_inference_service(
         inference_service_info: InferenceServiceInfo,
         name: str = Path(..., description='inference service명 설정'),
@@ -49,7 +49,7 @@ def create_inference_service(
                                                    inference_service_info=inference_service_info))
 
 
-@router.patch("/{name}", response_model=APIResponseModel)
+@router.patch("/{name}", response_model=APIResponseModel, operation_id="patchInferenceService")
 def patch_inference_service(
         inference_service_info: InferenceServiceInfo,
         name: str = Path(..., description='inference service명 설정'),
@@ -64,7 +64,7 @@ def patch_inference_service(
                                                   inference_service_info=inference_service_info))
 
 
-@router.put("/{name}", response_model=APIResponseModel)
+@router.put("/{name}", response_model=APIResponseModel, operation_id="replaceInferenceService")
 def replace_inference_service(
         inference_service_info: InferenceServiceInfo,
         name: str = Path(..., description='inference service명 설정'),
@@ -79,7 +79,7 @@ def replace_inference_service(
                                                     inference_service_info=inference_service_info))
 
 
-@router.get("/{name}", response_model=APIResponseModel)
+@router.get("/{name}", response_model=APIResponseModel, operation_id="getInferenceService")
 def get_inference_service(
         name: str = Path(..., description='inference service명 설정'),
         namespace: str = Path(..., description='네임스페이스 설정')
@@ -91,7 +91,7 @@ def get_inference_service(
         inference_service.get_inference_service(name=name, namespace=namespace))
 
 
-@router.delete("/{name}", response_model=APIResponseModel)
+@router.delete("/{name}", response_model=APIResponseModel, operation_id="deleteInferenceService")
 def delete_inference_service(
         name: str = Path(..., description='inference service명 설정'),
         namespace: str = Path(..., description='네임스페이스 설정')
@@ -103,7 +103,7 @@ def delete_inference_service(
         inference_service.delete_inference_service(name=name, namespace=namespace))
 
 
-@router.get("/{name}/detail", response_model=APIResponseModel)
+@router.get("/{name}/detail", response_model=APIResponseModel, operation_id="getInferenceServiceDetail")
 def get_inference_service_parse_detail(
         name: str = Path(..., description='inference service명 설정'),
         namespace: str = Path(..., description='네임스페이스 설정')
@@ -115,7 +115,7 @@ def get_inference_service_parse_detail(
         inference_service.get_inference_service_parse_detail(name=name, namespace=namespace))
 
 
-@router.get("/{name}/stat", response_model=APIResponseModel)
+@router.get("/{name}/stat", response_model=APIResponseModel, operation_id="getInferenceServiceStat")
 def get_inference_service_stat(
         name: str = Path(..., description='inference service명 설정'),
         namespace: str = Path(..., description='네임스페이스 설정')
@@ -127,16 +127,46 @@ def get_inference_service_stat(
         inference_service.get_inference_service_stat(name=name, namespace=namespace))
 
 
-@router.post("/{name}/infer", response_model=APIResponseModel)
-def inference(
+@router.post("/{name}/infer", response_model=APIResponseModel, operation_id="inferenceWithSingleData")
+def inference_single(
         name: str = Path(..., description='inference service명 설정'),
         namespace: str = Path(..., description='네임스페이스 설정'),
-        data: Union[List[Any], Dict[str, Any]] = Body(..., description='테스트 포맷에 맞게 input값을 설정'),
-        multi: bool = Query(default=True, description='true 다중 데이터 처리, false 단일 데이터 처리')
+        data: Any = Body(..., description='테스트 포맷에 맞게 input값을 설정')
 ):
     """
     inference service를 통해 모델을 테스트 해볼 수 있습니다.\n
-        - input값은 각 포맷에 맞게 입력시 output을 받아볼 수 있습니다.
+        - input값은 각 포맷에 맞게 입력시 output을 받아볼 수 있습니다.\n
+        - 단일 데이터 처리
     """
     return APIResponseModel.success(
-        inference_service.inference(name=name, namespace=namespace, data=data, multi=multi))
+        inference_service.inference(name=name, namespace=namespace, data=data, multi=False))
+
+
+@router.post("/{name}/infer-raw", response_model=APIResponseModel, operation_id="inferenceWithRawData")
+def inference_raw(
+        name: str = Path(..., description='inference service명 설정'),
+        namespace: str = Path(..., description='네임스페이스 설정'),
+        data: Dict[str, Any] = Body(..., description='테스트 포맷에 맞게 input값을 설정')
+):
+    """
+    inference service를 통해 모델을 테스트 해볼 수 있습니다.\n
+        - input값은 각 포맷에 맞게 입력시 output을 받아볼 수 있습니다.\n
+        - raw 데이터 처리
+    """
+    return APIResponseModel.success(
+        inference_service.inference(name=name, namespace=namespace, data=data, multi=None))
+
+
+@router.post("/{name}/infer-multiple", response_model=APIResponseModel, operation_id="inferenceWithMultipleData")
+def inference_multiple(
+        name: str = Path(..., description='inference service명 설정'),
+        namespace: str = Path(..., description='네임스페이스 설정'),
+        data: List[Any] = Body(..., description='테스트 포맷에 맞게 input값을 설정')
+):
+    """
+    inference service를 통해 모델을 테스트 해볼 수 있습니다.\n
+        - input값은 각 포맷에 맞게 입력시 output을 받아볼 수 있습니다.\n
+        - 다중 데이터 처리
+    """
+    return APIResponseModel.success(
+        inference_service.inference(name=name, namespace=namespace, data=data, multi=True))
