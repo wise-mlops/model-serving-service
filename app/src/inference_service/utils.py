@@ -73,7 +73,7 @@ def _get_model_format(i_svc_detail):
 
 
 def _get_protocol_version(i_svc_detail):
-    return _get_model(i_svc_detail)['modelFormat'].get("protocolVersion", "v1")
+    return _get_model(i_svc_detail).get("protocolVersion", "v1")
 
 
 def convert_inference_service_url(name: str):
