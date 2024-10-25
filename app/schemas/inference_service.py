@@ -113,10 +113,10 @@ class InferenceServiceInfo(BaseModel):
         json_schema_extra = {
             "example": {
                 "predictor": {
-                    "model_spec": {
+                    "model": {
                         "storage_uri": "s3://{{BUCKET_NAME}}/{{MODEL_PATH}}",
-                        "protocolVersion": "v2",
-                        "model_format": {
+                        "protocol_version": "v2",
+                        "format": {
                             "name": "pytorch"
                         }
                     },
